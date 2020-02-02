@@ -1,0 +1,17 @@
+.sensor {
+  background: #ddd;
+  width: 25%;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em;
+  margin: 10px auto;
+  border-radius: 2em;
+}
+
+.sensor .name {
+  font-weight: 600;
+  font-size: larger;
+}
