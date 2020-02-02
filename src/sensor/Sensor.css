@@ -1,0 +1,41 @@
+.sensor-panel {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.sensor-panel .sensor {
+  background: #ddd;
+  flex-grow: 1;
+  width: 30%;
+  height: 100px;
+  margin: 10px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+}
+
+.no-sensors {
+  display: flex;
+  justify-content: center;
+  font-size: calc(5px + 2vmin);
+}
+
+.sensor .name {
+  font-size: calc(10px + 2vmin);
+}
+
+.sensor button {
+  padding: 0 6px 0 6px;
+  margin: 6px 8px 6px 8px;
+  min-width: 150px;
+  border-radius: 3px;
+  font-size: 16px;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  outline: none;
+}
