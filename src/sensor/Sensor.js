@@ -3,19 +3,17 @@ import "./Sensor.css";
 
 const Sensor = props => (
   <div className="sensor">
-    <div className="name">{props.message.name}</div>
-    {props.message.value && (
+    <div className="name">{props.name}</div>
+    {props.value && (
       <div className="details">
-        {props.message.value} {props.message.unit}
+        {props.value} {props.unit}
       </div>
     )}
     <button
       className="change-status"
-      onClick={() =>
-        props.onStatusChange(props.message.connected, props.message.id)
-      }
+      onClick={() => props.changeStatus(props.id)}
     >
-      {props.message.connected ? "Disconnect" : "Connect"}
+      {props.connected ? "Disconnect" : "Connect"}
     </button>
   </div>
 );
