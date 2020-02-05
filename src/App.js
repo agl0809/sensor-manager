@@ -7,17 +7,15 @@ import "./App.css";
 const URL = "ws://127.0.0.1:5000";
 
 class App extends Component {
+  ws = new W3CWebSocket(URL);
+
   constructor(props) {
     super(props);
     this.state = {
       showConnected: false,
       sensors: []
     };
-  }
 
-  ws = new W3CWebSocket(URL);
-
-  componentDidMount() {
     this.ws.onopen = () => {
       console.log("connection established");
     };
@@ -41,27 +39,13 @@ class App extends Component {
     this.setState({ sensors: updatedSensors });
   };
 
-  changeStatus = (isConnect, sensorId) => {
-    const updatedSensors = this.state.sensors.map(el =>
-      el.id === sensorId ? { ...el, connected: !el.connected } : el
-    );
-
-    this.setState({
-      sensors: updatedSensors
-    });
-
-    this.sendData(isConnect, sensorId);
-  };
-
-  sendData = (isConnect, sensorId) => {
-    const command = isConnect ? "disconnect" : "connect";
-    const data = {
-      command,
-      id: sensorId
-    };
+  sendData = id => {
+    const command = this.state.sensors.find(elem => elem.id === id).connected
+      ? "disconnect"
+      : "connect";
 
     try {
-      this.ws.send(JSON.stringify(data));
+      this.ws.send(JSON.stringify({ command, id }));
     } catch (error) {
       console.log(error);
     }
@@ -70,18 +54,19 @@ class App extends Component {
   handleCheckboxChange = event =>
     this.setState({ showConnected: event.target.checked });
 
-  render() {
-    this.sensors = this.state.showConnected
+  filterSensors = () =>
+    this.state.showConnected
       ? this.state.sensors.filter(sensor => sensor.connected)
       : this.state.sensors;
 
+  render() {
     return (
       <Fragment>
         <Header
           checked={this.state.showConnected}
           onChange={this.handleCheckboxChange}
         />
-        <Sensors sensors={this.sensors} changeStatus={this.changeStatus} />
+        <Sensors sensors={this.filterSensors()} changeStatus={this.sendData} />
       </Fragment>
     );
   }
