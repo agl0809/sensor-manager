@@ -1,4 +1,5 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import Sensors from "./Sensors/Sensors";
 import Header from "./Header/Header";
@@ -8,16 +9,16 @@ const URL = "ws://127.0.0.1:5000";
 
 class App extends Component {
   ws = new W3CWebSocket(URL);
+  state = {
+    showConnected: false,
+    sensors: []
+  };
 
   constructor(props) {
     super(props);
-    this.state = {
-      showConnected: false,
-      sensors: []
-    };
 
     this.ws.onopen = () => {
-      console.log("connection established");
+      console.info("connection established");
     };
 
     this.ws.onmessage = message => {
@@ -26,7 +27,7 @@ class App extends Component {
     };
 
     this.ws.onclose = () => {
-      console.log("disconnected");
+      console.info("disconnected");
     };
   }
 
@@ -36,7 +37,9 @@ class App extends Component {
 
     index >= 0 ? (updatedSensors[index] = sensor) : updatedSensors.push(sensor);
 
-    this.setState({ sensors: updatedSensors });
+    ReactDOM.unstable_batchedUpdates(() =>
+      this.setState({ sensors: updatedSensors })
+    );
   };
 
   sendData = id => {
@@ -61,13 +64,13 @@ class App extends Component {
 
   render() {
     return (
-      <Fragment>
+      <>
         <Header
           checked={this.state.showConnected}
           onChange={this.handleCheckboxChange}
         />
         <Sensors sensors={this.filterSensors()} changeStatus={this.sendData} />
-      </Fragment>
+      </>
     );
   }
 }
