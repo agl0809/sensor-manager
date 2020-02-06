@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { throttle } from "lodash";
 import Sensors from "./Sensors/Sensors";
 import Header from "./Header/Header";
 import "./App.css";
 
 const URL = "ws://127.0.0.1:5000";
+const WAIT = 2000;
 
 class App extends Component {
   ws = new W3CWebSocket(URL);
@@ -17,13 +18,18 @@ class App extends Component {
   constructor(props) {
     super(props);
 
+    this.buffer = [];
+
     this.ws.onopen = () => {
       console.info("connection established");
     };
 
     this.ws.onmessage = message => {
       const sensor = JSON.parse(message.data);
-      this.addSensor(sensor);
+
+      this.state.sensors.findIndex(el => el.id === sensor.id) >= 0
+        ? this.setBuffer(sensor)
+        : this.addSensor(sensor);
     };
 
     this.ws.onclose = () => {
@@ -32,15 +38,20 @@ class App extends Component {
   }
 
   addSensor = sensor => {
-    let updatedSensors = this.state.sensors;
-    const index = this.state.sensors.findIndex(el => el.id === sensor.id);
-
-    index >= 0 ? (updatedSensors[index] = sensor) : updatedSensors.push(sensor);
-
-    ReactDOM.unstable_batchedUpdates(() =>
-      this.setState({ sensors: updatedSensors })
-    );
+    this.setState({ sensors: [sensor, ...this.state.sensors] });
+    this.buffer.push(sensor);
   };
+
+  setBuffer = sensor => {
+    const index = this.buffer.findIndex(el => el.id === sensor.id);
+    this.buffer[index] = sensor;
+
+    this.updateSensor();
+  };
+
+  updateSensor = throttle(() => {
+    this.setState({ sensors: this.buffer });
+  }, WAIT);
 
   sendData = id => {
     const command = this.state.sensors.find(elem => elem.id === id).connected
