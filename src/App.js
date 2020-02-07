@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import Sensors from "./Sensors/Sensors";
 import Header from "./Header/Header";
@@ -37,9 +36,7 @@ class App extends Component {
 
     index >= 0 ? (updatedSensors[index] = sensor) : updatedSensors.push(sensor);
 
-    ReactDOM.unstable_batchedUpdates(() =>
-      this.setState({ sensors: updatedSensors })
-    );
+    this.setState({ sensors: updatedSensors });
   };
 
   sendData = id => {
