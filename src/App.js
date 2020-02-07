@@ -28,7 +28,7 @@ class App extends Component {
       const sensor = JSON.parse(message.data);
 
       this.state.sensors.findIndex(el => el.id === sensor.id) >= 0
-        ? this.setBuffer(sensor)
+        ? this.updateSensor(sensor)
         : this.addSensor(sensor);
     };
 
@@ -38,18 +38,20 @@ class App extends Component {
   }
 
   addSensor = sensor => {
-    this.setState({ sensors: [sensor, ...this.state.sensors] });
-    this.buffer.push(sensor);
+    this.setState(
+      { sensors: [sensor, ...this.state.sensors] },
+      () => (this.buffer = [...this.state.sensors])
+    );
   };
 
-  setBuffer = sensor => {
+  updateSensor = sensor => {
     const index = this.buffer.findIndex(el => el.id === sensor.id);
     this.buffer[index] = sensor;
 
-    this.updateSensor();
+    this.refreshSensors();
   };
 
-  updateSensor = throttle(() => {
+  refreshSensors = throttle(() => {
     this.setState({ sensors: this.buffer });
   }, WAIT);
 
